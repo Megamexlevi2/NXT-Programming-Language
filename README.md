@@ -26,7 +26,7 @@ Quick Start
 Create a file hello.nxt:
 
 ```nxt
-log("Hello, World!")
+print("Hello, World!")
 ```
 
 Run it directly:

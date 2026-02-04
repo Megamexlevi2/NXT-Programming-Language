@@ -39,7 +39,7 @@ npx nxt help
 Create `hello.nxt`:
 
 ```nxt
-log("Hello, World!")
+print("Hello, World!")
 ```
 
 Run it directly:
@@ -309,7 +309,7 @@ maybeValue: str? = getValue()
 
 // Have operator for null checks
 if value have {
-  log(value)
+  print(value)
 }
 ```
 
@@ -345,7 +345,7 @@ fn add(a: num, b: num): num {
 }
 
 fn processUser(user: map): void {
-  log(user.name)
+  print(user.name)
 }
 ```
 
@@ -404,7 +404,7 @@ fn sum(...numbers: list<num>): num {
   return total
 }
 
-log(sum(1, 2, 3, 4, 5))
+print(sum(1, 2, 3, 4, 5))
 ```
 
 ### Async Functions
@@ -422,7 +422,7 @@ async fn loadUser(id: num): Promise<map> {
     posts = await getPosts(id)
     return { user: user, posts: posts }
   } catch err {
-    log("Error:", err.message)
+    print("Error:", err.message)
     return null
   }
 }
@@ -438,13 +438,13 @@ async fn loadUser(id: num): Promise<map> {
 score: num = 85
 
 if score >= 90 {
-  log("Grade: A")
+  print("Grade: A")
 } else if score >= 80 {
-  log("Grade: B")
+  print("Grade: B")
 } else if score >= 70 {
-  log("Grade: C")
+  print("Grade: C")
 } else {
-  log("Grade: F")
+  print("Grade: F")
 }
 ```
 
@@ -474,7 +474,7 @@ isValid: bool = value have and value > 0
 user: map? = getUser()
 
 ifhave user {
-  log("User exists")
+  print("User exists")
 }
 ```
 
@@ -484,7 +484,7 @@ ifhave user {
 count: num = 0
 
 while count < 5 {
-  log(count)
+  print(count)
   count = count + 1
 }
 ```
@@ -501,7 +501,7 @@ person: map = {
 }
 
 for key in person {
-  log(`${key}: ${person[key]}`)
+  print(`${key}: ${person[key]}`)
 }
 ```
 
@@ -513,7 +513,7 @@ Iterate over array elements:
 numbers: list<num> = [10, 20, 30, 40]
 
 for num of numbers {
-  log(num * 2)
+  print(num * 2)
 }
 ```
 
@@ -521,7 +521,7 @@ for num of numbers {
 
 ```nxt
 for var i: num = 0; i < 10; i = i + 1 {
-  log(i)
+  print(i)
 }
 ```
 
@@ -531,22 +531,22 @@ for var i: num = 0; i < 10; i = i + 1 {
 status: str = "success"
 
 match status {
-  "success" -> log("Operation succeeded")
-  "error" -> log("Operation failed")
-  "pending" -> log("Still processing")
-  else -> log("Unknown status")
+  "success" -> print("Operation succeeded")
+  "error" -> print("Operation failed")
+  "pending" -> print("Still processing")
+  else -> print("Unknown status")
 }
 
 day: num = 3
 
 match day {
-  1 -> log("Monday")
-  2 -> log("Tuesday")
-  3 -> log("Wednesday")
-  4 -> log("Thursday")
-  5 -> log("Friday")
-  6, 7 -> log("Weekend")
-  else -> log("Invalid day")
+  1 -> print("Monday")
+  2 -> print("Tuesday")
+  3 -> print("Wednesday")
+  4 -> print("Thursday")
+  5 -> print("Friday")
+  6, 7 -> print("Weekend")
+  else -> print("Invalid day")
 }
 ```
 
@@ -560,7 +560,7 @@ for var i: num = 0; i < 10; i = i + 1 {
   if i % 2 == 0 {
     continue
   }
-  log(i)
+  print(i)
 }
 ```
 
@@ -678,7 +678,7 @@ class Person {
 }
 
 person = new Person("Alice", 30)
-log(person.greet())
+print(person.greet())
 ```
 
 ### Class Inheritance
@@ -706,7 +706,7 @@ class Dog extends Animal {
 }
 
 dog = new Dog("Rex", "Labrador")
-log(dog.speak())
+print(dog.speak())
 ```
 
 ### Static Methods
@@ -774,17 +774,17 @@ export const API_KEY = "secret"
 ```nxt
 try {
   result = riskyOperation()
-  log(result)
+  print(result)
 } catch err {
-  log("Error:", err.message)
+  print("Error:", err.message)
 }
 
 try {
   data = await fetchData()
 } catch err {
-  log("Failed to fetch:", err)
+  print("Failed to fetch:", err)
 } finally {
-  log("Cleanup")
+  print("Cleanup")
 }
 ```
 
@@ -905,7 +905,7 @@ const items = [1, 2, 3]
 ```nxt
 // Check if value exists (not null/undefined)
 if value have {
-  log(value)
+  print(value)
 }
 
 // Use in expressions
@@ -917,9 +917,9 @@ isValid = value have and value > 0
 ```nxt
 // Use 'else' instead of '_' for default case
 match status {
-  "success" -> log("OK")
-  "error" -> log("Failed")
-  else -> log("Unknown")
+  "success" -> print("OK")
+  "error" -> print("Failed")
+  else -> print("Unknown")
 }
 ```
 
@@ -988,9 +988,9 @@ fn getUser(id: num): User? {
 user = getUser(1)
 
 if user have {
-  log(user.name)
+  print(user.name)
 } else {
-  log("User not found")
+  print("User not found")
 }
 ```
 
@@ -1011,7 +1011,7 @@ match status {
 // Clean and concise
 items.map(x => x * 2)
 items.filter(x => x > 0)
-items.forEach(x => log(x))
+items.forEach(x => print(x))
 
 // With block bodies
 items.map(item => {
@@ -1028,7 +1028,7 @@ async fn safeRequest(url: str): Promise<map?> {
     response = await fetch(url)
     return await response.json()
   } catch err {
-    log("Request failed:", err.message)
+    print("Request failed:", err.message)
     return null
   }
 }
@@ -1153,8 +1153,8 @@ fn add(a: Number, b: Number): Number {
 }
 
 match status {
-  "success" -> log("OK")
-  _ -> log("Unknown")
+  "success" -> print("OK")
+  _ -> print("Unknown")
 }
 ```
 
@@ -1174,8 +1174,8 @@ fn add(a: num, b: num): num {
 add = (a: num, b: num) => a + b
 
 match status {
-  "success" -> log("OK")
-  else -> log("Unknown")
+  "success" -> print("OK")
+  else -> print("Unknown")
 }
 ```
 
@@ -1189,8 +1189,8 @@ The compiler automatically removes unused code:
 
 ```nxt
 // Only used functions are included in output
-fn helper1() { log("Used") }
-fn helper2() { log("Unused") }
+fn helper1() { print("Used") }
+fn helper2() { print("Unused") }
 
 helper1()  // Only this function is in final output
 ```
@@ -1292,12 +1292,12 @@ x = 20
 ```nxt
 // Error
 user = getUser()
-log(user.name)  // May be null
+print(user.name)  // May be null
 
 // Fix
 user = getUser()
 if user have {
-  log(user.name)
+  print(user.name)
 }
 ```
 
