@@ -1,12 +1,33 @@
 # NXT Programming Language - Complete Documentation
 
+> ⚠️ **IMPORTANT NOTICE**: NXT is currently in early development (v3.0.0) and contains many bugs and stability issues. This compiler is experimental and not recommended for production use. Use at your own risk!
+
+## Known Issues & Limitations
+
+🐛 **Current Known Bugs:**
+- Type checking is unstable and may produce false errors
+- Backend development may encounter compilation errors
+- Complex nested structures sometimes fail to compile
+- Error messages are not always accurate
+- Some edge cases in variable scoping are not handled properly
+- Class inheritance has limited support
+- Async/await may not work in all contexts
+
+**Recommendations:**
+- Keep code simple and avoid deeply nested structures
+- Test frequently and in small increments
+- Disable type checking (`typeCheck: false`) for more stable compilation
+- Report bugs on GitHub: https://github.com/Megamexlevi2
+
+---
+
 ## Introduction
 
-NXT is a modern, statically-typed programming language designed for backend development, AI applications, games, and browser-based projects. It compiles to clean, optimized JavaScript and runs on both Node.js and modern browsers. NXT features a simplified syntax with type aliases, null safety, and seamless interoperability with the JavaScript ecosystem.
+NXT is an experimental, statically-typed programming language designed for backend development, AI applications, games, and browser-based projects. It compiles to clean, optimized JavaScript and runs on both Node.js and modern browsers.
 
 **Key Features:**
 - Simplified type system with type aliases (str, num, bool, list, map)
-- Optional variable assignment (auto const inference)
+- Flexible variable declarations (supports both syntaxes)
 - Built-in null safety mechanisms
 - Compiles to Node.js and Browser targets
 - Full access to npm packages and Node.js APIs
@@ -83,7 +104,7 @@ nxt nax <file.nxt>
 **Options:**
 - `-b, --browser` - Compile for browser environment
 - `-m, --minify` - Minify the output code
-- `-s, --strict` - Enable strict type checking
+- `-s, --strict` - Enable strict type checking (NOT RECOMMENDED - BUGGY)
 - `-o, --output <file>` - Specify output file path
 - `--no-tree-shake` - Disable tree shaking
 - `--credits` - Add compiler credits to output
@@ -92,33 +113,12 @@ nxt nax <file.nxt>
 **Examples:**
 
 ```bash
-# Basic compilation (Node.js target)
 nxt nax app.nxt
-
-# Compile for browser
 nxt nax -b app.nxt
-
-# Compile with minification
 nxt nax -m app.nxt
-
-# Compile for browser with minification
 nxt nax -bm app.nxt
-
-# Compile with strict type checking
-nxt nax -s app.nxt
-
-# Compile with custom output path
 nxt nax -o output/app.js app.nxt
-
-# Compile for browser, minified, with strict checking
-nxt nax -bms app.nxt
 ```
-
-**Combined Flags:**
-- `-bm` or `-mb` - Browser + minify
-- `-bs` or `-sb` - Browser + strict
-- `-ms` or `-sm` - Minify + strict
-- `-bms`, `-bsm`, `-mbs`, `-msb`, `-sbm`, `-smb` - Browser + minify + strict
 
 ### Build Command
 
@@ -142,19 +142,6 @@ nxt init
 ```
 
 This generates a configuration file with default settings.
-
-### Check Command
-
-Type check a file without compiling:
-
-```bash
-nxt check <file.nxt>
-```
-
-Example:
-```bash
-nxt check app.nxt
-```
 
 ### Watch Command
 
@@ -216,29 +203,43 @@ nxt --help
 
 ---
 
-## Language Fundamentals
+## Language Syntax
+
+### Output Functions
+
+NXT supports multiple ways to print output:
+
+```nxt
+log("Hello")
+print("Hello")
+console.log("Hello")
+```
+
+All three work identically and compile to `console.log()`.
 
 ### Variables and Type Annotations
 
-NXT supports simplified variable declarations with optional type annotations:
+NXT supports TWO syntax styles for maximum flexibility:
 
+**Style 1: Type-first (Classic)**
 ```nxt
-// Auto const inference - no keyword needed
-x = 10
-
-// Explicit variable types
-var count: num = 0
-count = 10
-
-// Const declaration
-const PI: num = 3.14159
-
-// Init declaration (recommended for immutables)
-init name: str = "Alex"
+name: str = "Alice"
+age: num = 30
+isActive: bool = true
+items: list<str> = ["a", "b", "c"]
 ```
 
+**Style 2: Variable-first (JavaScript-like)**
+```nxt
+var name: str = "Alice"
+var age: num = 30
+var isActive: bool = true
+var items: list<str> = ["a", "b", "c"]
+```
+
+**Both syntaxes work!** Choose the one you prefer.
+
 **Variable Keywords:**
-- No keyword - Auto const inference (recommended for simple assignments)
 - `var` - Mutable variable (can be reassigned)
 - `let` - Mutable variable (can be reassigned)
 - `const` - Immutable constant (cannot be reassigned)
@@ -247,20 +248,12 @@ init name: str = "Alex"
 **Type Aliases (Simplified Syntax):**
 
 ```nxt
-// Simplified types
 name: str = "Alice"
 age: num = 25
 isActive: bool = true
 items: list<str> = ["apple", "banana"]
 config: map = { key: "value" }
 data: any = "can be anything"
-
-// Full type names still supported
-fullName: string = "Alice Smith"
-count: number = 42
-flag: boolean = true
-array: Array<string> = ["a", "b", "c"]
-object: Object = { id: 1 }
 ```
 
 **Type Alias Mapping:**
@@ -270,6 +263,7 @@ object: Object = { id: 1 }
 - `list` → `Array`
 - `map` → `Object`
 - `any` → `any`
+- `void` → `void`
 
 ### Primitive Types
 
@@ -294,39 +288,6 @@ person: map = {
   age: 30,
   email: "alice@example.com"
 }
-
-// Using full type names
-stringArray: Array<string> = ["a", "b", "c"]
-userData: Object = { id: 1, name: "Bob" }
-```
-
-### Nullable Types
-
-```nxt
-// Nullable types use ? suffix
-user: User? = null
-maybeValue: str? = getValue()
-
-// Have operator for null checks
-if value have {
-  log(value)
-}
-```
-
-### Type Inference
-
-NXT can automatically infer types:
-
-```nxt
-// Auto const inference
-count = 0
-name = "Alice"
-items = [1, 2, 3]
-user = { id: 1, name: "Bob" }
-
-// Explicit initialization
-init age: num = 25
-var score: num = 0
 ```
 
 ---
@@ -335,6 +296,9 @@ var score: num = 0
 
 ### Function Declaration
 
+Both syntaxes supported:
+
+**Style 1: Return type after parameters**
 ```nxt
 fn greet(name: str): str {
   return "Hello, " + name
@@ -343,7 +307,10 @@ fn greet(name: str): str {
 fn add(a: num, b: num): num {
   return a + b
 }
+```
 
+**Style 2: More verbose**
+```nxt
 fn processUser(user: map): void {
   log(user.name)
 }
@@ -351,60 +318,17 @@ fn processUser(user: map): void {
 
 ### Arrow Functions
 
-NXT supports arrow functions with infinite nested function support:
-
 ```nxt
-// Single expression arrow function
 double = (x: num) => x * 2
 
-// Block body arrow function
 sum = (a: num, b: num) => {
   return a + b
 }
 
-// Async arrow function
 fetchData = async (url: str) => {
   response = await fetch(url)
   return await response.json()
 }
-
-// Nested arrow functions
-createMultiplier = (factor: num) => (value: num) => value * factor
-```
-
-### Function Expressions
-
-```nxt
-multiply = fn(x: num, y: num): num {
-  return x * y
-}
-
-square = fn(n: num): num => n * n
-```
-
-### Default Parameters
-
-```nxt
-fn createUser(name: str, role: str = "user"): map {
-  return { name: name, role: role }
-}
-
-user1 = createUser("Alice")
-user2 = createUser("Bob", "admin")
-```
-
-### Rest Parameters
-
-```nxt
-fn sum(...numbers: list<num>): num {
-  total: num = 0
-  for num of numbers {
-    total = total + num
-  }
-  return total
-}
-
-log(sum(1, 2, 3, 4, 5))
 ```
 
 ### Async Functions
@@ -414,17 +338,6 @@ async fn fetchData(url: str): Promise<map> {
   response = await fetch(url)
   data = await response.json()
   return data
-}
-
-async fn loadUser(id: num): Promise<map> {
-  try {
-    user = await getUser(id)
-    posts = await getPosts(id)
-    return { user: user, posts: posts }
-  } catch err {
-    log("Error:", err.message)
-    return null
-  }
 }
 ```
 
@@ -441,10 +354,8 @@ if score >= 90 {
   log("Grade: A")
 } else if score >= 80 {
   log("Grade: B")
-} else if score >= 70 {
-  log("Grade: C")
 } else {
-  log("Grade: F")
+  log("Grade: C")
 }
 ```
 
@@ -457,20 +368,13 @@ max: num = a > b ? a : b
 
 ### Have Operator (Null Safety)
 
-The `have` operator provides null safety:
-
 ```nxt
 value: any? = getValue()
 
-// Have expression in if statement
 if value have {
   processValue(value)
 }
 
-// Have in logical expressions
-isValid: bool = value have and value > 0
-
-// IfHave statement (legacy support)
 user: map? = getUser()
 
 ifhave user {
@@ -484,285 +388,77 @@ ifhave user {
 count: num = 0
 
 while count < 5 {
-  log(count)
+  log("Count: " + count)
   count = count + 1
 }
 ```
 
-### For-In Loops
-
-Iterate over object properties:
+### For Loops
 
 ```nxt
-person: map = { 
-  name: "Alice", 
-  age: 30, 
-  city: "NYC" 
+for i in 5 {
+  log("Iteration: " + i)
 }
 
-for key in person {
-  log(`${key}: ${person[key]}`)
+items: list<str> = ["a", "b", "c"]
+
+for item of items {
+  log(item)
 }
-```
 
-### For-Of Loops
-
-Iterate over array elements:
-
-```nxt
-numbers: list<num> = [10, 20, 30, 40]
-
-for num of numbers {
-  log(num * 2)
-}
-```
-
-### Traditional For Loops
-
-```nxt
-for var i: num = 0; i < 10; i = i + 1 {
+for i = 0; i < 10; i = i + 1 {
   log(i)
 }
 ```
 
-### Match Statements (Pattern Matching)
+### Match Statements
 
 ```nxt
 status: str = "success"
 
 match status {
-  "success" -> log("Operation succeeded")
-  "error" -> log("Operation failed")
-  "pending" -> log("Still processing")
+  "pending" -> log("Processing...")
+  "success" -> log("Complete!")
+  "error" -> log("Failed")
   else -> log("Unknown status")
 }
-
-day: num = 3
-
-match day {
-  1 -> log("Monday")
-  2 -> log("Tuesday")
-  3 -> log("Wednesday")
-  4 -> log("Thursday")
-  5 -> log("Friday")
-  6, 7 -> log("Weekend")
-  else -> log("Invalid day")
-}
-```
-
-### Break and Continue
-
-```nxt
-for var i: num = 0; i < 10; i = i + 1 {
-  if i == 5 {
-    break
-  }
-  if i % 2 == 0 {
-    continue
-  }
-  log(i)
-}
 ```
 
 ---
 
-## Operators
+## Complete Example
 
-### Arithmetic Operators
-
-```nxt
-a: num = 10
-b: num = 3
-
-sum = a + b
-diff = a - b
-prod = a * b
-quot = a / b
-mod = a % b
-pow = a ** b
-```
-
-### Comparison Operators
+Here's a working example showing both syntax styles:
 
 ```nxt
-x: num = 5
-y: num = 10
+fn getUser(id: num): str {
+  user = database.getUser(id)
+  if user have {
+    return user.name ?? "Guest"
+  }
+  return "Guest"
+}
 
-equal = x == y
-notEqual = x != y
-greater = x > y
-less = x < y
-greaterOrEqual = x >= y
-lessOrEqual = x <= y
-```
+name: str = "David"
+var count: num = 0
 
-### Logical Operators
+fn greet(user: str): str {
+  return "Hello, " + user
+}
 
-```nxt
-isActive: bool = true
-hasPermission: bool = false
-
-// Using keyword operators
-canAccess = isActive and hasPermission
-shouldAlert = not isActive or hasPermission
-
-// Using symbol operators (also supported)
-result1 = isActive && hasPermission
-result2 = isActive || hasPermission
-result3 = !isActive
-```
-
-### Null Coalescing
-
-```nxt
-value: str? = null
-result: str = value ?? "default"
-
-user: map? = getUser()
-name: str = user?.name ?? "Guest"
-```
-
-### Spread Operator
-
-```nxt
-arr1: list<num> = [1, 2, 3]
-arr2: list<num> = [...arr1, 4, 5, 6]
-
-obj1: map = { a: 1, b: 2 }
-obj2: map = { ...obj1, c: 3 }
-```
-
-### Assignment Operators
-
-```nxt
-count: num = 0
-
-count += 5
-count -= 2
-count *= 3
-count /= 2
-count %= 4
-```
-
-### Update Operators
-
-```nxt
-i: num = 0
-
-i++
-++i
-i--
---i
-```
-
----
-
-## Classes
-
-### Class Declaration
-
-```nxt
-class Person {
-  init(name: str, age: num) {
-    this.name = name
-    this.age = age
+fn main(): void {
+  log(greet(name))
+  print("Starting counter...")
+  
+  while count < 5 {
+    console.log("Counter: " + count)
+    count = count + 1
   }
   
-  fn greet(): str {
-    return `Hello, I'm ${this.name}`
-  }
-  
-  fn getAge(): num {
-    return this.age
-  }
+  log("Done!")
 }
 
-person = new Person("Alice", 30)
-log(person.greet())
-```
-
-### Class Inheritance
-
-```nxt
-class Animal {
-  init(name: str) {
-    this.name = name
-  }
-  
-  fn speak(): str {
-    return "Some sound"
-  }
-}
-
-class Dog extends Animal {
-  init(name: str, breed: str) {
-    super(name)
-    this.breed = breed
-  }
-  
-  fn speak(): str {
-    return "Woof!"
-  }
-}
-
-dog = new Dog("Rex", "Labrador")
-log(dog.speak())
-```
-
-### Static Methods
-
-```nxt
-class MathHelper {
-  static fn add(a: num, b: num): num {
-    return a + b
-  }
-  
-  static fn multiply(a: num, b: num): num {
-    return a * b
-  }
-}
-
-result = MathHelper.add(5, 3)
-```
-
----
-
-## Imports and Exports
-
-### Import Statements
-
-```nxt
-// Import from Node.js modules
-import fs from "fs"
-import path from "path"
-
-// Import specific exports
-import { readFile, writeFile } from "fs"
-
-// Import with alias
-import express as app from "express"
-
-// Import everything
-import * as utils from "./utils"
-```
-
-### Export Statements
-
-```nxt
-// Export functions
-export fn calculateSum(a: num, b: num): num {
-  return a + b
-}
-
-// Export classes
-export class User {
-  init(name: str) {
-    this.name = name
-  }
-}
-
-// Export variables
-export const API_KEY = "secret"
+main()
 ```
 
 ---
@@ -773,254 +469,14 @@ export const API_KEY = "secret"
 
 ```nxt
 try {
-  result = riskyOperation()
-  log(result)
+  data = parseJSON(input)
+  log(data.value)
 } catch err {
   log("Error:", err.message)
 }
-
-try {
-  data = await fetchData()
-} catch err {
-  log("Failed to fetch:", err)
-} finally {
-  log("Cleanup")
-}
 ```
 
-### Throwing Errors
-
-```nxt
-fn divide(a: num, b: num): num {
-  if b == 0 {
-    throw "Cannot divide by zero"
-  }
-  return a / b
-}
-```
-
-### Error Statement
-
-```nxt
-fn validateUser(user: map) {
-  if not user.name {
-    error 400
-  }
-}
-```
-
----
-
-## Project Configuration
-
-### Configuration File (nxt.config.json)
-
-Create a configuration file using:
-
-```bash
-nxt init
-```
-
-Default configuration structure:
-
-```json
-{
-  "input": "./src",
-  "output": "./dist",
-  "target": "node",
-  "minify": false,
-  "sourceMap": false,
-  "strict": false,
-  "typeCheck": true,
-  "treeShake": true,
-  "credits": false,
-  "obfuscateRuntime": false
-}
-```
-
-**Configuration Options:**
-
-- `input` - Source directory (default: "./src")
-- `output` - Output directory (default: "./dist")
-- `target` - Compilation target: "node" or "browser" (default: "node")
-- `minify` - Minify output code (default: false)
-- `sourceMap` - Generate source maps (default: false)
-- `strict` - Enable strict type checking (default: false)
-- `typeCheck` - Enable type checking (default: true)
-- `treeShake` - Enable tree shaking optimization (default: true)
-- `credits` - Add compiler credits to output (default: false)
-- `obfuscateRuntime` - Obfuscate runtime code (default: false)
-
-### Building a Project
-
-```bash
-# Create config file
-nxt init
-
-# Build entire project
-nxt build nxt.config.json
-```
-
-The build command will:
-1. Read the configuration file
-2. Find all `.nxt` files in the input directory
-3. Compile them to JavaScript
-4. Output compiled files to the output directory
-5. Display compilation summary
-
----
-
-## New Syntax Features (v3.0)
-
-### 1. Simplified Type Aliases
-
-```nxt
-// Old syntax
-name: String = "Alice"
-age: Number = 30
-items: Array<String> = ["a", "b"]
-
-// New simplified syntax
-name: str = "Alice"
-age: num = 30
-items: list<str> = ["a", "b"]
-```
-
-### 2. Optional Assignment (Auto Const)
-
-```nxt
-// No keyword needed - auto const inference
-x = 10
-name = "Alice"
-items = [1, 2, 3]
-
-// These are equivalent to:
-const x = 10
-const name = "Alice"
-const items = [1, 2, 3]
-```
-
-### 3. Have Operator
-
-```nxt
-// Check if value exists (not null/undefined)
-if value have {
-  log(value)
-}
-
-// Use in expressions
-isValid = value have and value > 0
-```
-
-### 4. Match with Else
-
-```nxt
-// Use 'else' instead of '_' for default case
-match status {
-  "success" -> log("OK")
-  "error" -> log("Failed")
-  else -> log("Unknown")
-}
-```
-
-### 5. Arrow Functions
-
-```nxt
-// Infinite nested function support
-makeAdder = (x: num) => (y: num) => x + y
-add5 = makeAdder(5)
-result = add5(3)  // 8
-
-// Async arrow functions
-fetchUser = async (id: num) => {
-  data = await api.get(`/users/${id}`)
-  return data
-}
-```
-
-### 6. Type Annotations
-
-```nxt
-// Type annotations with simplified types
-user: map = { id: 1 }
-score: num = 100
-active: bool = true
-items: list<str> = ["a", "b", "c"]
-```
-
----
-
-## Best Practices
-
-### 1. Use Simplified Types
-
-```nxt
-// Recommended
-fn calculateTotal(items: list<map>): num {
-  total: num = 0
-  for item of items {
-    total += item.price
-  }
-  return total
-}
-```
-
-### 2. Use Auto Const for Simple Values
-
-```nxt
-// Recommended for simple assignments
-MAX_USERS = 100
-API_KEY = "your-api-key"
-CONFIG = { timeout: 5000, retries: 3 }
-
-// Use explicit keywords for clarity when needed
-var counter = 0
-const PI = 3.14159
-```
-
-### 3. Leverage Have Operator
-
-```nxt
-fn getUser(id: num): User? {
-  return database.findUser(id)
-}
-
-user = getUser(1)
-
-if user have {
-  log(user.name)
-} else {
-  log("User not found")
-}
-```
-
-### 4. Use Match with Else
-
-```nxt
-match status {
-  "pending" -> processPending()
-  "approved" -> processApproved()
-  "rejected" -> processRejected()
-  else -> handleUnknown()
-}
-```
-
-### 5. Use Arrow Functions for Callbacks
-
-```nxt
-// Clean and concise
-items.map(x => x * 2)
-items.filter(x => x > 0)
-items.forEach(x => log(x))
-
-// With block bodies
-items.map(item => {
-  processed = transform(item)
-  return processed
-})
-```
-
-### 6. Handle Errors Properly
+### Async Error Handling
 
 ```nxt
 async fn safeRequest(url: str): Promise<map?> {
@@ -1036,412 +492,179 @@ async fn safeRequest(url: str): Promise<map?> {
 
 ---
 
-## Advanced Patterns
-
-### Factory Pattern
+## Classes
 
 ```nxt
-class UserFactory {
-  static fn create(type: str): User {
-    match type {
-      "admin" -> return new AdminUser()
-      "editor" -> return new EditorUser()
-      else -> return new RegularUser()
-    }
+class User {
+  init(name: str, email: str) {
+    this.name = name
+    this.email = email
+  }
+  
+  fn greet(): str {
+    return "Hello, " + this.name
   }
 }
 
-user = UserFactory.create("admin")
-```
-
-### Repository Pattern
-
-```nxt
-class UserRepository {
-  async fn findById(id: num): Promise<User?> {
-    result = await db.query("SELECT * FROM users WHERE id = ?", [id])
-    if result.length > 0 {
-      return new User(result[0])
-    }
-    return null
-  }
-  
-  async fn save(user: User): Promise<void> {
-    await db.query("INSERT INTO users VALUES (?, ?)", [user.id, user.name])
-  }
-}
-```
-
-### Observer Pattern
-
-```nxt
-class EventEmitter {
-  init() {
-    this.listeners = {}
-  }
-  
-  fn on(event: str, callback: Function) {
-    if not this.listeners[event] {
-      this.listeners[event] = []
-    }
-    this.listeners[event].push(callback)
-  }
-  
-  fn emit(event: str, data: any) {
-    if this.listeners[event] have {
-      for listener of this.listeners[event] {
-        listener(data)
-      }
-    }
-  }
-}
-```
-
-### Functional Composition
-
-```nxt
-// Using arrow functions for composition
-compose = (f, g) => (x) => f(g(x))
-
-double = (x: num) => x * 2
-square = (x: num) => x * x
-
-doubleThenSquare = compose(square, double)
-result = doubleThenSquare(3)  // (3 * 2)^2 = 36
+user = new User("Alice", "alice@example.com")
+log(user.greet())
 ```
 
 ---
 
-## Migration Guide
-
-### From JavaScript to NXT
-
-```javascript
-// JavaScript
-function getUser(id) {
-  const user = database.getUser(id);
-  if (user && user.name) {
-    return user.name;
-  }
-  return "Guest";
-}
-```
+## Import/Export
 
 ```nxt
-// NXT
-fn getUser(id: num): str {
-  user = database.getUser(id)
-  if user have {
-    return user.name ?? "Guest"
-  }
-  return "Guest"
-}
-```
+import { helper } from "./utils"
+import defaultExport from "./main"
 
-### From Old NXT to New NXT
-
-```nxt
-// Old NXT syntax
-var name: String = "Alice"
-var age: Number = 30
-var items: Array<String> = ["a", "b", "c"]
-
-init PI: Number = 3.14159
-
-fn add(a: Number, b: Number): Number {
-  return a + b
+export fn myFunction(): void {
+  log("Exported function")
 }
 
-match status {
-  "success" -> log("OK")
-  _ -> log("Unknown")
-}
-```
-
-```nxt
-// New NXT syntax (v3.0+)
-name: str = "Alice"
-age: num = 30
-items: list<str> = ["a", "b", "c"]
-
-PI = 3.14159
-
-fn add(a: num, b: num): num {
-  return a + b
-}
-
-// Or using arrow function
-add = (a: num, b: num) => a + b
-
-match status {
-  "success" -> log("OK")
-  else -> log("Unknown")
-}
+export { helper, myFunction }
 ```
 
 ---
 
-## Compiler Features
+## Configuration File
 
-### Tree Shaking
-
-The compiler automatically removes unused code:
-
-```nxt
-// Only used functions are included in output
-fn helper1() { log("Used") }
-fn helper2() { log("Unused") }
-
-helper1()  // Only this function is in final output
-```
-
-Disable tree shaking:
-```bash
-nxt nax --no-tree-shake app.nxt
-```
-
-### Runtime Optimization
-
-The compiler generates optimized runtime code with:
-- Minimal runtime overhead
-- Optional runtime obfuscation
-- Browser and Node.js compatibility
-- Efficient feature detection
-
-Enable runtime obfuscation:
-```bash
-nxt nax --obfuscate app.nxt
-```
-
-### Type Checking
-
-```bash
-# Check types without compiling
-nxt check app.nxt
-
-# Enable strict type checking during compilation
-nxt nax -s app.nxt
-```
-
----
-
-## Performance Tips
-
-### 1. Enable Tree Shaking
-
-Tree shaking is enabled by default. It removes unused code from the final output.
+Create `nxt.config.json`:
 
 ```json
 {
-  "treeShake": true
+  "input": "./src",
+  "output": "./dist",
+  "target": "node",
+  "minify": false,
+  "sourceMap": false,
+  "strict": false,
+  "typeCheck": false,
+  "treeShake": true,
+  "credits": false,
+  "obfuscateRuntime": false
 }
 ```
 
-### 2. Use Minification
-
-```bash
-nxt nax -m app.nxt
-```
-
-### 3. Optimize Loops
-
-```nxt
-// Efficient array processing
-processedItems = items
-  .filter(x => x.active)
-  .map(x => x.value)
-```
-
-### 4. Use Arrow Functions
-
-```nxt
-// Arrow functions are optimized
-callback = (x) => x * 2
-
-// Better than function expressions
-callback = fn(x) { return x * 2 }
-```
+**Recommended settings:**
+- `typeCheck: false` - Type checking is buggy, keep it disabled
+- `strict: false` - Strict mode causes errors
+- `treeShake: true` - Tree shaking works well
 
 ---
 
 ## Troubleshooting
 
-### Common Errors
+### Common Issues
 
-**Type mismatch:**
-```nxt
-// Error
-count: num = "123"
+**Compilation errors with backend code:**
+- Try simplifying your code structure
+- Avoid deeply nested functions
+- Keep functions short and focused
 
-// Fix
-count: num = 123
-```
+**Type checking errors:**
+- Set `typeCheck: false` in config
+- Remove type annotations if causing issues
+- Use `any` type for problematic variables
 
-**Cannot reassign constant:**
-```nxt
-// Error
-x = 10
-x = 20  // Error: x is auto const
+**Variables not working:**
+- Both syntaxes work: `name: str = "value"` OR `var name: str = "value"`
+- Make sure you're using one consistently
 
-// Fix
-var x = 10
-x = 20
-```
+**Functions failing:**
+- Check that all parameters have types
+- Use explicit return types
+- Avoid complex async patterns
 
-**Null reference:**
-```nxt
-// Error
-user = getUser()
-log(user.name)  // May be null
+### Getting Help
 
-// Fix
-user = getUser()
-if user have {
-  log(user.name)
-}
-```
-
-**File not found:**
-```bash
-# Error: [NXT Error] File not found: app.nxt
-
-# Fix: Ensure the file exists and path is correct
-nxt run ./path/to/app.nxt
-```
-
-**No config file:**
-```bash
-# Error: [NAX Error] No config file specified
-
-# Fix: Create config file first
-nxt init
-nxt build nxt.config.json
-```
+- **GitHub**: https://github.com/Megamexlevi2
+- **NPM Package**: `@david0dev/nxt-lang`
+- **Issues**: Report bugs on GitHub with code examples
 
 ---
 
-## Complete Command Reference
+## Best Practices
 
-### Basic Commands
+### Do's ✓
+- Keep code simple and straightforward
+- Use `log()`, `print()`, or `console.log()` - all work
+- Test frequently during development
+- Use `var` for mutable variables
+- Disable type checking if you encounter issues
+- Use arrow functions for callbacks
 
-```bash
-# Run a NXT file
-nxt run app.nxt
+### Don'ts ✗
+- Don't use strict type checking in production
+- Avoid complex nested structures
+- Don't mix too many async operations
+- Avoid very large files (split into modules)
+- Don't rely on advanced type features yet
 
-# Compile to JavaScript
-nxt nax app.nxt
+---
 
-# Show help
-nxt help
+## Example Programs
 
-# Show version
-nxt version
+### Simple Hello World
+
+```nxt
+fn main(): void {
+  log("Hello, NXT!")
+}
+
+main()
 ```
 
-### Compilation Options
+### Counter Program
 
-```bash
-# Compile for browser
-nxt nax -b app.nxt
+```nxt
+var count: num = 0
 
-# Compile with minification
-nxt nax -m app.nxt
-
-# Compile with strict type checking
-nxt nax -s app.nxt
-
-# Combine options
-nxt nax -bm app.nxt        # Browser + minify
-nxt nax -bs app.nxt        # Browser + strict
-nxt nax -bms app.nxt       # Browser + minify + strict
-
-# Custom output path
-nxt nax -o dist/app.js app.nxt
-
-# Disable tree shaking
-nxt nax --no-tree-shake app.nxt
-
-# Add compiler credits
-nxt nax --credits app.nxt
-
-# Obfuscate runtime
-nxt nax --obfuscate app.nxt
+while count < 10 {
+  print("Count: " + count)
+  count = count + 1
+}
 ```
 
-### Project Commands
+### User Greeting
 
-```bash
-# Initialize project
-nxt init
+```nxt
+fn greet(name: str): str {
+  return "Welcome, " + name + "!"
+}
 
-# Build project
-nxt build nxt.config.json
-
-# Type check without compiling
-nxt check app.nxt
-
-# Watch mode
-nxt watch app.nxt
-nxt nax -w app.nxt
-```
-
-### Development Commands
-
-```bash
-# Start REPL
-nxt repl
-
-# Check types
-nxt check app.nxt
-
-# Watch and recompile
-nxt watch app.nxt
+var userName: str = "Alice"
+log(greet(userName))
 ```
 
 ---
 
 ## Version History
 
-### v3.0.0 (Current)
+### v3.0.0 (Current - ALPHA/EXPERIMENTAL)
+- ⚠️ Early experimental release with known bugs
 - Simplified type system (str, num, bool, list, map)
-- Auto const inference
+- Support for both variable declaration syntaxes
+- Multiple print functions (log, print, console.log)
 - Have operator for null safety
 - Match with else support
-- Arrow functions with infinite nesting
-- Improved compiler performance
-- Enhanced tree shaking
-- Better error messages
-- REPL improvements
-
-### v2.x
-- Initial type system
-- Class support
-- Async/await
-- Pattern matching
+- Arrow functions support
+- Improved compiler (still buggy)
+- Type checking disabled by default (unstable)
 
 ---
 
-License
+## License
 
 NXT is licensed under the Apache License 2.0.
 
-Naming and Identity Protection:
-
-· The project must always be referred to as "NXT Programming Language"
-· Releasing the project under a different name is not permitted
-· Forks may add identifiers (e.g., NXT-Extended, NXT-Fork) but cannot remove or replace the NXT name
-· NXT is an identity-protected programming language
+**Naming and Identity Protection:**
+- The project must always be referred to as "NXT Programming Language"
+- Releasing the project under a different name is not permitted
+- Forks may add identifiers (e.g., NXT-Extended, NXT-Fork) but cannot remove or replace the NXT name
+- NXT is an identity-protected programming language
 
 Note: The term "NXT" may be used by other companies or brands in different contexts. This project refers specifically to the NXT Programming Language, which is independent of any company using the name "NXT".
-
-Support
-
-· GitHub: github.com/Megamexlevi2
-· NPM Package: @david0dev/nxt-lang
-
-Contributing
-
-Forks are allowed under the terms of the Apache License 2.0. The project identity must be preserved as specified in the license terms.
 
 ---
 
@@ -1449,22 +672,33 @@ Forks are allowed under the terms of the Apache License 2.0. The project identit
 
 - **GitHub**: [github.com/Megamexlevi2](https://github.com/Megamexlevi2)
 - **NPM Package**: `@david0dev/nxt-lang`
-- **Documentation**: This guide
-- **Issues**: Report bugs on GitHub
 - **Author**: David Dev
+
+---
+
+## Contributing
+
+Forks are allowed under the terms of the Apache License 2.0. The project identity must be preserved as specified in the license terms.
+
+**Help wanted:**
+- Bug reports with reproducible examples
+- Simple bug fixes
+- Documentation improvements
+- Example programs
 
 ---
 
 ## Conclusion
 
-NXT v3.0 brings simplified syntax and powerful features that make development faster and more intuitive. With type aliases, auto const inference, the have operator, and arrow functions, NXT provides a modern development experience while maintaining full JavaScript compatibility.
+NXT v3.0 is an **experimental language** with many bugs and limitations. It brings simplified syntax and powerful features but is **not production-ready**. Use it for learning, experimentation, and simple projects only.
 
 **Quick Start Recap:**
 
 1. Install: `npm install -g @david0dev/nxt-lang`
 2. Create file: `hello.nxt`
 3. Run: `nxt run hello.nxt`
-4. Compile: `nxt nax hello.nxt`
-5. Execute: `node hello.js`
+4. Or compile: `nxt nax hello.nxt` then `node hello.js`
 
-Start building with NXT today!
+⚠️ **Remember**: This is early alpha software. Expect bugs, crashes, and breaking changes!
+
+Start experimenting with NXT today, but don't use it for anything critical!
